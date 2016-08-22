@@ -11,6 +11,10 @@ var _APP_INFO = {
   name: 'Github Battle',
   branch: 'video4',
   version: '1.0'
+};
+
+window.onerror = function() {
+  Raven.showReportDialog();
 }
 
 Raven.config(sentryURL, {

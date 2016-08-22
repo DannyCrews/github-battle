@@ -1,5 +1,6 @@
 
 var axios = require('axios');
+var logCustomMessage = require('./logCustomMessage');
 
 var id = "YOUR_CLIENT_ID";
 var sec = "YOUR_SECRET_ID";
@@ -21,8 +22,8 @@ function getTotalStars(repos) {
 
 function getPlayersData(player) {
     return getRepos(player.login)
-        .then(getTotalStars)
-        .then(function(totalStars) {
+    .then(getTotalStars)
+    .then(function(totalStars) {
         return {
             followers: player.followers,
             totalStars: totalStars
@@ -42,22 +43,28 @@ var helpers = {
         return axios.all(players.map(function(username) {
             return getUserInfo(username)
         }))
-            .then(function(info) {
+        .then(function(info) {
             return info.map(function(user) {
                 return user.data
             })
         })
-            .catch (function(err) {
-            console.warn('Error in getPlayersInfo: ', err)
+        .catch (function(error) {
+            return logCustomMessage(error.statusText, {
+                players: players,
+                error: error
+            })
         })
     },
     battle: function(players) {
         var playerOneData = getPlayersData(players[0]);
         var playerTwoData = getPlayersData(players[1]);
         return axios.all([playerOneData, playerTwoData])
-            .then(calculateScores)
-            .catch (function(err) {
-            console.warn('Error in getPlayersInfo: ', err)
+        .then(calculateScores)
+        .catch (function(error) {
+            return logCustomMessage(error.statusText, {
+                players: players,
+                error: error
+            })
         })
     }
 };
